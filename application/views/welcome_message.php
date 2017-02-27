@@ -8,7 +8,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<title>Welcome</title>
 
     <!-- Bootstrap CSS -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" />
+<!--    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet" />-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   
 	<link rel="stylesheet" href="asset/css/app.css">
 
@@ -25,30 +28,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body ng-controller="mainCtrl as vm">
 
 <div id="container">
-	<h1>Welcome to CodeIgniter! </h1>
-    <div class="navbar">
-      <div class="navbar-inner">
-        <a class="brand" href="#">Quick Start</a>
-        <ul class="nav">
-          <li>
-            <a ui-sref="route1">Route 1</a>
-          </li>
-          <li>
-            <a ui-sref="route2">Route 2</a>
-          </li>
-          <li>
-            <a ui-sref="home">Home</a>
-          </li>          
-          <li>
-            <a ui-sref="login">Login</a>
-          </li>          
-          <li>
-            <a ui-sref="register">Register</a>
-          </li>
-        </ul>
+
+
+  <nav class="navbar navbar-default">
+      <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">Quick Start {{vm.loggedIn}}</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li><a ui-sref="route1">Route 1</a></li>
+            <li><a ui-sref="route2">Route 2</a></li>
+            
+
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li ng-show="vm.loggedIn"><a ui-sref="home">{{vm.fullName}}</a></li>
+            <li ng-show="!vm.loggedIn"><a ui-sref="login">Login</a></li>
+          </ul>
       </div>
-    </div>
-    
+  </nav>  
+
 	<div id="body">
 		<div class="row">
 	      <div class="span12">
@@ -56,15 +55,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	      </div>
 	    </div>
 		
-		<p> kolla detta: https://github.com/michalsn/CodeIgniter-AngularJS-App</p>	
-		<p>Name: <input type="text" ng-model="name"></p>
-		<p ng-bind="name"></p>
-		<p>Vm: {{vm.a}} </p>
-        {{list}}
 	</div>
 
-	<p class="footer"> <a href="user_guide/">User Guide</a> - Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-</div>
+	  <p class="footer"> <a href="user_guide/">User Guide</a> - Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION .'- php:' .phpversion().'</strong>' : '' ?></p>
+  </div>
    
 </body>
  

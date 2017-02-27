@@ -1,11 +1,26 @@
-<h1>Hi {{vm.user.firstName}}!</h1>
+<h1>Hi {{vm.name}}!</h1>
 <p>You're logged in!!</p>
-<h3>All registered users:</h3>
-<ul>
-    <li ng-repeat="user in vm.allUsers">
-        {{user.username}} ({{user.firstName}} {{user.lastName}})
-        - <a ng-click="vm.deleteUser(user.id)">Delete</a>
-    </li>
-</ul>
-<p>&nbsp;</p>
-<p><a href="#!/login" class="btn btn-primary">Logout</a></p>
+
+<div class="row">
+    <div class="col-sm-6">
+        <h3>All registered users: </h3>
+        <ul>
+            <li ng-repeat="person in vm.allPersons">
+                <a href="#" ng-click="vm.deletePerson(person.person_id)"><span class="glyphicon glyphicon-trash"></span></a>
+                <a ui-sref="home.detail ({person_id: person.person_id})" ng-click="vm.editPerson(person.person_id)"><span class="glyphicon glyphicon-edit"></span> 
+                    {{person.person_id}}{{person.first_name}} {{person.last_name}} {{person.username}}
+                </a>
+
+            </li>
+        </ul>
+        <p>&nbsp;</p>
+        <p><button ng-click="vm.logout()" class="btn btn-primary">Logout</button></p>
+
+    </div>
+    <div class="col-sm-6" style="background-color:lavenderblush;">
+
+        <ui-view></ui-view>
+
+    </div>
+</div>
+

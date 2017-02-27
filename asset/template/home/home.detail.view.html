@@ -1,0 +1,13 @@
+<h1>View Person,</h1>
+
+<p>{{vm.data.person_id}}</p>
+<h3>{{vm.data.first_name}} </h3> 
+<h3>{{vm.data.last_name}} </h3>
+
+<div>
+    <form ng-submit="vm.update()" role="form">
+        <input type="text" ng-model="vm.data.first_name"/>
+        <input type="text" ng-model="vm.data.last_name"/>
+        <input type="submit" value="Submit"  class="btn btn-primary"/>
+    </form>
+</div>

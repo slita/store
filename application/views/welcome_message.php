@@ -42,7 +42,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li ng-show="vm.loggedIn"><a ui-sref="home">{{vm.fullName}}</a></li>
+            <li ng-show="vm.loggedIn"><a ui-sref="account">{{vm.fullName}}</a></li>
             <li ng-show="!vm.loggedIn"><a ui-sref="login">Login</a></li>
           </ul>
       </div>

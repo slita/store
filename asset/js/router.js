@@ -25,6 +25,12 @@ angular.module('app')
           controller: 'loginCtrl',
           controllerAs: 'vm'
         })
+        .state('account', {
+          url: '/account',
+          templateUrl: 'asset/template/register/account.view.html',
+          controller: 'accountCtrl',
+          controllerAs: 'vm'
+        })
         .state('register', {
           url: '/register',
           templateUrl: 'asset/template/register/register.view.html',

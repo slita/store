@@ -145,6 +145,55 @@ angular.module('app')
     }
 
 })
+.controller('accountCtrl', function( $http, $stateParams, $state, appData, $scope) {
+
+    var vm = this;
+
+    vm.fullName         = appData.getFullName();
+    vm.logout       = logout;
+    vm.user         = appData.getUser();
+    
+
+/*    $http({
+        method: 'GET',
+        url: 'index.php/api/persons/' + appData.getUserId()
+        }).then(function successCallback(response) {
+            // this callback will be called asynchronously
+            // when the response is available
+            vm.user = response.data;
+        }, function errorCallback(response) {
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+        });
+        */
+    function logout(){
+        
+        /**
+         *  Loggaut user och ta bort cookie, 
+         *  gå sedan till root.
+         * 
+         * 
+         */
+        
+         $http({
+            method: 'GET',
+            url: 'index.php/api/logout/' + appData.getUserId()
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                
+            }); 
+            
+        /**
+         * Sen meddelande till mainCtrl
+         * gå till förstasidan
+         * 
+         */
+        $scope.$emit('loggedIn', false);
+        $state.go('route1');
+    }
+
+})
 .controller('homeCtrl', function( $http, $stateParams, $state, appData, $scope) {
 
     var vm = this;
@@ -170,13 +219,13 @@ angular.module('app')
         });
         
     function logout(){
-        
+       //ta bort 
         /**
          *  Loggaut user och ta bort cookie, 
          *  gå sedan till root.
          * 
          * 
-         */
+         
         
         console.log('logout');
         
@@ -193,9 +242,9 @@ angular.module('app')
          * Sen meddelande till mainCtrl
          * gå till förstasidan
          * 
-         */
+         * /
         $scope.$emit('loggedIn', false);
-        $state.go('route1');
+        $state.go('route1');*/
     }
   
     function deletePerson($id) {
@@ -309,7 +358,10 @@ angular.module('app')
         var fullName = this.data.user.first_name + ' ' + this.data.user.last_name;
         return fullName;
     }
-
+    this.getUser = function(){
+        
+        return this.data.user;
+    }
     
 })
 .factory('resource', function resource ($http) {

@@ -31,6 +31,13 @@ angular.module('app')
           controller: 'accountCtrl',
           controllerAs: 'vm'
         })
+        .state('user', {
+          url: '/user',
+          templateUrl: 'asset/template/register/user.view.html',
+          controller: 'userCtrl',
+          controllerAs: 'vm'
+
+        })
         .state('register', {
           url: '/register',
           templateUrl: 'asset/template/register/register.view.html',
@@ -42,9 +49,9 @@ angular.module('app')
             templateUrl: 'asset/js/route1.html',
             resolve: {
               user: function(resource, $stateParams) {
-              return resource.getSignedIn();
+                return resource.getSignedIn();
+              }
             }
-          }
         })
           .state('route1.list', {
               url: '/list',

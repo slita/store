@@ -147,12 +147,14 @@ class Persons_model extends CI_Model {
                                         
                         } else {
                                 // echo 'Invalid password.';
-                                http_response_code(401);
+                                //http_response_code(401);
+                                $this->output->set_status_header(401);
                                 return array('message' => 'error');
                         }
                 } else {
                         // echo 'Invalid username.';
-                        http_response_code(401);
+                        //http_response_code(401);
+                        $this->output->set_status_header(401);
                         return array('message' => 'error');
                 }
                 

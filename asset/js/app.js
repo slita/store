@@ -153,19 +153,6 @@ angular.module('app')
     vm.logout       = logout;
     vm.user         = appData.getUser();
     
-
-/*    $http({
-        method: 'GET',
-        url: 'index.php/api/persons/' + appData.getUserId()
-        }).then(function successCallback(response) {
-            // this callback will be called asynchronously
-            // when the response is available
-            vm.user = response.data;
-        }, function errorCallback(response) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
-        */
     function logout(){
         
         /**
@@ -191,6 +178,20 @@ angular.module('app')
          */
         $scope.$emit('loggedIn', false);
         $state.go('route1');
+    }
+
+})
+.controller('userCtrl', function( $http, $stateParams, $state, appData) {
+
+    var vm = this;
+    vm.update = update;
+
+    vm.fullName     = appData.getFullName();
+    vm.user         = appData.getUser();
+    
+    function update(){
+        console.log('update', vm.user);
+        $state.go('account');
     }
 
 })

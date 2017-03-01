@@ -181,16 +181,30 @@ angular.module('app')
     }
 
 })
-.controller('userCtrl', function( $http, $stateParams, $state, appData) {
+.controller('userCtrl', function($scope, $http, $stateParams, $state, appData) {
 
-    var vm = this;
-    vm.update = update;
-
-    vm.fullName     = appData.getFullName();
-    vm.user         = appData.getUser();
-    
+    var vm      = this;
+    vm.update   = update;
+    vm.fullName = appData.getFullName();
+    vm.user     = appData.getUser();
+   
+   
     function update(){
-        console.log('update', vm.user);
+        $http({
+            method: 'POST',
+            url: 'index.php/api/update_person/' + vm.user.person_id,
+            data: vm.user
+        }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+
+        }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                console.log('person-error', response)
+        });
+        
+        $scope.$emit('loggedIn', true);
         $state.go('account');
     }
 

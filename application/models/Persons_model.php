@@ -25,9 +25,9 @@ class Persons_model extends CI_Model {
                 
 		
 		if (!isset($cookie)){
-		    log_message('debug','no cookie');  
-		    
-		    return FALSE;
+		        log_message('debug','no cookie');  
+                        return FALSE;
+
 		}
 		
 		// get person
@@ -35,8 +35,8 @@ class Persons_model extends CI_Model {
 		if (isset($row)){
 		        
 		    if (!$row->signed_in){ 
-		            log_message('debug','not signed in');  
-		            return FALSE;
+		        log_message('debug','not signed in');  
+                        return FALSE;
 		    }   
 		      
 		    if ($method === 'check'){
@@ -63,6 +63,9 @@ class Persons_model extends CI_Model {
                 $query = $this->db->get('person');
                 $row = $query->row();
 
+                // nollställ psw
+                $row->psw = null; 
+                
                 if (isset($row))
                 {
                         return $row;
@@ -88,19 +91,38 @@ class Persons_model extends CI_Model {
                 return  $this->db->insert_id();
         }
 
-        public function update_person()
+        function update_person($id=null)
         {
 
-                $_POST = json_decode($this->input->raw_input_stream, true);
+                // alternativ 1
+                // $_POST = json_decode($this->input->raw_input_stream, TRUE);
+                // $data = $this->input->post(array('first_name','last_name','email'));
+                // $this->db->update('person', $data, array('person_id' => $id));
+
+                // alternativ 2
+/*                $this->load->helper('array');
+                $raw_data = json_decode($this->input->raw_input_stream, TRUE);
+                $data = elements(array('first_name','last_name','email'), $raw_data);
+                $this->db->update('person', $data, array('person_id' => $id));*/
+                
+                // alternativ 4
+                $this->load->helper('array');
+                $raw_data = json_decode($this->input->raw_input_stream, TRUE);
+                $data = elements(array('first_name','last_name','email'), $raw_data);            
+                
+                $this->db->set($data);
+                $this->db->where('person_id', $id);
+                $this->db->update('person');
+
+
+/*                
+                alternativet 3
+                $_POST = json_decode($this->input->raw_input_stream, TRUE);
 
                 $this->first_name = $this->input->post('first_name'); 
                 $this->last_name  = $this->input->post('last_name'); 
-                $this->username   = $this->input->post('username'); 
                 $this->email      = $this->input->post('email'); 
-
-                $this->psw        = $this->password_hash(); 
-
-                $this->db->update('person', $this, array('person_id' => $this->input->post('person_id')));
+                $this->db->update('person', $this, array('person_id' => $id));*/
 
         }
         public function delete_person($id)

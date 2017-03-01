@@ -28,8 +28,8 @@ class Api extends CI_Controller {
         
         $this->load->model('persons_model','',TRUE);
         
-		
         
+
     }
 	
 
@@ -64,29 +64,31 @@ class Api extends CI_Controller {
 	public function persons()
 	{
  
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+		
 		$this->persons_model->signed_in();
 		
 		$query = $this->persons_model->get_all_persons();
 		echo json_encode($query);
 
 	}		
-	public function update_person()
+	public function update_person($id=null)
 	{
- 		
+ 		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
-		$this->persons_model->update_person();
+		$this->persons_model->update_person($id);
 
 	}
 	public function insert_person()
 	{
-	
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
 		$id = $this->persons_model->insert_person();
 
 	}
 	public function delete_person($id)
 	{
-
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
 		$this->persons_model->delete_person($id);
 
@@ -94,6 +96,7 @@ class Api extends CI_Controller {
 	public function get_one_person($id)
 	{
 
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
 		$row = $this->persons_model->get_one_person($id);
 		echo json_encode($row);

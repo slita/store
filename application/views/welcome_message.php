@@ -49,6 +49,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
   </nav>  
 
 	<div id="body">
+
 		<div class="row">
 	      <div class="span12">
 	        <div class="well" ui-view=""></div>

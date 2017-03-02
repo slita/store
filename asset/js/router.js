@@ -44,6 +44,12 @@ angular.module('app')
           controller: 'registerCtrl',
           controllerAs: 'vm'
         })
+        .state('item', {
+          url: '/item',
+          templateUrl: 'asset/template/item/item.view.html',
+          controller: 'itemCtrl',
+          controllerAs: 'vm'
+        })
         .state('route1', {
             url: '/route1',
             templateUrl: 'asset/js/route1.html',

@@ -38,7 +38,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           <ul class="nav navbar-nav">
             <li><a ui-sref="route1">Route 1</a></li>
             <li><a ui-sref="route2">Route 2</a></li>
-            
+            <li><a ui-sref="item">New item</a></li>
 
           </ul>
           <ul class="nav navbar-nav navbar-right">

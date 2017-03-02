@@ -10,12 +10,12 @@ class Persons_model extends CI_Model {
         public $psw;
         
         
-	public function signed_in($method='check'){
+	function signed_in($method='check'){
 		
 		/**
-		 * Param:
-		 *   methode = 'check' - Returns only boolean TRUE or FALSE
-		 *   medhode = 'user'  - Returns $row from person or FALSE
+		 *   Param:
+		 *   method = 'check' - Returns only boolean TRUE or FALSE
+		 *   medhod = 'user'  - Returns $row from person or FALSE
 		 * 
 		 */
 		
@@ -52,12 +52,12 @@ class Persons_model extends CI_Model {
 	        return FALSE;	
 	}
 
-        public function get_all_persons()
+        function get_all_persons()
         {
                 $query = $this->db->get('person',10);
                 return $query->result();
         }
-        public function get_one_person($id)
+        function get_one_person($id)
         {
                 $this->db->where('person_id', $id);
                 $query = $this->db->get('person');
@@ -73,7 +73,7 @@ class Persons_model extends CI_Model {
                 
 
         }
-        public function insert_person()
+        function insert_person()
         {
 
                 $_POST = json_decode($this->input->raw_input_stream, true);
@@ -125,7 +125,7 @@ class Persons_model extends CI_Model {
                 $this->db->update('person', $this, array('person_id' => $id));*/
 
         }
-        public function delete_person($id)
+        function delete_person($id)
         {
                 $this->db->delete('person', array('person_id' => $id));  
         }
@@ -181,7 +181,7 @@ class Persons_model extends CI_Model {
                 }
                 
         }
-	public function logout($person_id=null){
+	function logout($person_id=null){
 
 
 		$this->load->helper('cookie');

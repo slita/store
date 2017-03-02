@@ -1,8 +1,12 @@
 // Code goes here
 'use strict';
 
+(function() {  
 angular.module('app', ["ui.router"]);
+}());
 
+
+(function() {
 angular.module('app')
 
 .controller('mainCtrl', function($http, appData, $scope) {
@@ -12,8 +16,8 @@ angular.module('app')
      *  och om inloggad läser in data.user
      * 
      */
-    
-    var vm = angular.extend(this, {
+    var vm = this;
+    angular.extend(vm, {
       data      : {},
       fullName  : '',
       loggedIn  : false,
@@ -22,7 +26,7 @@ angular.module('app')
     });  
 
     $scope.$on('loggedIn', function(event, data) { 
-        console.log('mainController:',data); 
+        
         vm.loggedIn = data;
         vm.fullName = appData.getFullName();
     });
@@ -34,42 +38,6 @@ angular.module('app')
         // this callback will be called asynchronously
         // when the response is available
         vm.data.user = response.data;
-        console.log('signed_in:',vm.data.user);
-        appData.setUser(vm.data.user);
-        vm.fullName = appData.getFullName();
-        if (appData.getUserId() == undefined) {
-             vm.loggedIn = false
-        } else {
-            vm.loggedIn = true;
-        }
-    });     
-        
-      
-})
-.controller('menuCtrl', function($http, appData) {
-    
-    /**
-     *  Kotrollera om user är inloggad (cookieinfomation)
-     *  och om inloggad läser in data.user
-     * 
-     */
-    
-    var vm = angular.extend(this, {
-      data      : {},
-      fullName  : '',
-      loggedIn  : false
-      
-    });  
-
-
-    $http({
-        method: 'GET',
-        url: 'index.php/api/signed_in/user'
-    }).then(function successCallback(response) {
-        // this callback will be called asynchronously
-        // when the response is available
-        vm.data.user = response.data;
-        console.log('signed_in:',vm.data.user);
         appData.setUser(vm.data.user);
         vm.fullName = appData.getFullName();
         if (appData.getUserId() == undefined) {
@@ -108,7 +76,7 @@ angular.module('app')
 })
 .controller('loginCtrl', function($http, $stateParams, $state, $scope, appData){
 
-    var vm = this;
+    var vm          = this;
     vm.login        = login;
 
     vm.data         = {};
@@ -129,7 +97,7 @@ angular.module('app')
                 // this callback will be called asynchronously
                 // when the response is available
                 vm.data = response.data;
-                console.log('förex',vm.data);
+
 
                 appData.setUser(vm.data);
                 $scope.$emit('loggedIn', true);
@@ -147,9 +115,8 @@ angular.module('app')
 })
 .controller('accountCtrl', function( $http, $stateParams, $state, appData, $scope) {
 
-    var vm = this;
-
-    vm.fullName         = appData.getFullName();
+    var vm          = this;
+    vm.fullName     = appData.getFullName();
     vm.logout       = logout;
     vm.user         = appData.getUser();
     
@@ -201,7 +168,7 @@ angular.module('app')
         }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log('person-error', response)
+
         });
         
         $scope.$emit('loggedIn', true);
@@ -211,12 +178,11 @@ angular.module('app')
 })
 .controller('homeCtrl', function( $http, $stateParams, $state, appData, $scope) {
 
-    var vm = this;
-
+    var vm          = this;
     vm.name         = appData.getFullName();
     vm.deletePerson = deletePerson;
     vm.person_id    = $stateParams.person_id;
-    vm.logout       = logout;
+
     
     var bar = 'bar';
    
@@ -233,35 +199,7 @@ angular.module('app')
             // or server returns response with an error status.
         });
         
-    function logout(){
-       //ta bort 
-        /**
-         *  Loggaut user och ta bort cookie, 
-         *  gå sedan till root.
-         * 
-         * 
-         
-        
-        console.log('logout');
-        
-         $http({
-            method: 'GET',
-            url: 'index.php/api/logout/' + appData.getUserId()
-            }).then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                vm.allPersons = response.data;
-            }); 
-            
-        /**
-         * Sen meddelande till mainCtrl
-         * gå till förstasidan
-         * 
-         * /
-        $scope.$emit('loggedIn', false);
-        $state.go('route1');*/
-    }
-  
+    
     function deletePerson($id) {
 
         var url = 'index.php/api/delete_person/' + $id;
@@ -277,22 +215,16 @@ angular.module('app')
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
             });
-        
     }
-    
-
 })
 .controller('homeDetailCtrl', function( $http, $stateParams) {
 
-    var vm = this;
-    
-   
-    
-    vm.name="Perre",
-    vm.data = {},
-    vm.person_id = $stateParams.person_id,
-    vm.update = update,
-    vm.logout = logout;
+    var vm          = this;
+    vm.name         = "Perre",
+    vm.data         = {},
+    vm.person_id    = $stateParams.person_id,
+    vm.update       = update,
+    vm.logout       = logout;
     
     function logout (){
         
@@ -308,7 +240,7 @@ angular.module('app')
             }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log('person-error', response)
+
             });      
         
     }
@@ -327,7 +259,7 @@ angular.module('app')
             }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log('person-error', response)
+
             });      
         
     }
@@ -344,25 +276,30 @@ angular.module('app')
             }, function errorCallback(response) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.log('person-error', response)
+
             });
   
 
 })
+.controller('itemCtrl',function(){
+    var vm = this;
+    console.log('itemCtrl');
+    
+})
 .service('appData', function() {
+    
+    /**
+     * service appData, 
+     * contain data about the application
+     * 
+     */
+    
     
     this.data = {
         user: {}
     };
     
-/*    this.setId = function (id) {
-        
-        this.data.id = id;
-    }
-    this.getId = function () {
-        
-        return this.data.id;
-    }*/
+
     this.setUser = function (user){
         this.data.user = user;
     }
@@ -397,3 +334,4 @@ angular.module('app')
     }
     
 });
+}());

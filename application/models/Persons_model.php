@@ -91,21 +91,14 @@ class Persons_model extends CI_Model {
                 return  $this->db->insert_id();
         }
 
+
+        /**
+         * Update one person
+         * @param {integer} id - Id for the person
+         */
         function update_person($id=null)
         {
 
-                // alternativ 1
-                // $_POST = json_decode($this->input->raw_input_stream, TRUE);
-                // $data = $this->input->post(array('first_name','last_name','email'));
-                // $this->db->update('person', $data, array('person_id' => $id));
-
-                // alternativ 2
-/*                $this->load->helper('array');
-                $raw_data = json_decode($this->input->raw_input_stream, TRUE);
-                $data = elements(array('first_name','last_name','email'), $raw_data);
-                $this->db->update('person', $data, array('person_id' => $id));*/
-                
-                // alternativ 4
                 $this->load->helper('array');
                 $raw_data = json_decode($this->input->raw_input_stream, TRUE);
                 $data = elements(array('first_name','last_name','email'), $raw_data);            
@@ -113,16 +106,6 @@ class Persons_model extends CI_Model {
                 $this->db->set($data);
                 $this->db->where('person_id', $id);
                 $this->db->update('person');
-
-
-/*                
-                alternativet 3
-                $_POST = json_decode($this->input->raw_input_stream, TRUE);
-
-                $this->first_name = $this->input->post('first_name'); 
-                $this->last_name  = $this->input->post('last_name'); 
-                $this->email      = $this->input->post('email'); 
-                $this->db->update('person', $this, array('person_id' => $id));*/
 
         }
         function delete_person($id)

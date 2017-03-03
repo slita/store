@@ -51,8 +51,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div id="body">
 
 		<div class="row">
-	      <div class="span12">
-	        <div class="well" ui-view=""></div>
+	      <div class="col-md-6 col-md-offset-3">
+
+	          <ui-view></ui-view>
+
 	      </div>
 	    </div>
 		

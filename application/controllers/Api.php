@@ -27,19 +27,36 @@ class Api extends CI_Controller {
         
         
         $this->load->model('persons_model','',TRUE);
-        
-        
+        $this->load->model('store_model','',TRUE);
+        $this->load->model('item_model','',TRUE);
 
     }
 	
+	/**
+	 * index.pgp/api/update_item/user/nn/store/nn/item/nn
+	 * 
+	 */ 
+	
+	
+/*	public function update_item(
+		$person_kd=NULL,
+		$person_id=NULL,
+		$store_kd=NULL,
+		$store_id=NULL,
+		$item_kd=NULL,
+		$item_id=NULL)
+	{
+ 		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
+		$this->persons_model->update_person($id);
+
+	}*/
 	
 	public function index( )
 	{
 
 		
 	}
-	
 	public function per($foo='bar')
 	{
 
@@ -49,7 +66,11 @@ class Api extends CI_Controller {
 
 		echo 'foo:', json_encode($arr);
 	}
-	public function signed_in(){
+	
+	/** Person */
+	
+	public function signed_in()
+	{
 		$row = $this->persons_model->signed_in('user');
 		
 
@@ -60,7 +81,6 @@ class Api extends CI_Controller {
 		}
 
 	}
-	
 	public function persons()
 	{
  
@@ -109,11 +129,46 @@ class Api extends CI_Controller {
 		echo json_encode($logged_in);
 		
 	}		
-
 	public function logout ($person_id=null)
 	{
 		
 		$this->persons_model->logout($person_id);
 
 	}	
+	
+	/** Store and Items */
+	
+	/**
+	 * Get one store
+	 * @param {integer} $id - Sore id
+	 * @return {object} All information about the store
+	 * 
+	 */
+	
+	public function get_one_store($id)
+	{
+
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+
+		$row = $this->store_model->get_one_store($id);
+		echo json_encode($row);
+
+	}
+	
+	/**
+	 * Insert a store
+	 * 
+	 * @data {object} POST Item data, json
+	 * @return {integer} Id for the store 
+	 * 
+	 */
+	
+	public function insert_store()
+	{
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+
+		$id = $this->store_model->insert_store();
+
+		echo json_encode($id);
+	}
 }

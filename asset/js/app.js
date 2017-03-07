@@ -17,6 +17,7 @@ angular.module('app')
          */
         var vm = this;
         angular.extend(vm, {
+          getUserData : getUserData,
           data      : {},
           fullName  : '',
           loggedIn  : false,
@@ -30,23 +31,32 @@ angular.module('app')
             vm.fullName = appData.getFullName();
         });
     
-        $http({
-            method: 'GET',
-            url: 'index.php/api/signed_in/user'
-        }).then(function successCallback(response) {
-            // this callback will be called asynchronously
-            // when the response is available
-            vm.data.user = response.data;
-            appData.setUser(vm.data.user);
-            vm.fullName = appData.getFullName();
-            if (appData.getUserId() == undefined) {
-                 vm.loggedIn = false
-            } else {
-                vm.loggedIn = true;
-            }
-        });     
-            
-          
+        
+        vm.getUserData();
+        
+
+        
+        function getUserData (){
+            $http({
+                method: 'GET',
+                url: 'index.php/api/signed_in/user'
+            }).then(function successCallback(response) {
+                // this callback will be called asynchronously
+                // when the response is available
+                
+                console.log('getUserData:', response.data);
+                    
+                    appData.setUser(response.data);
+                    vm.fullName = appData.getFullName();
+                    if (appData.getUserId() == undefined) {
+                         vm.loggedIn = false;
+                    } else {
+                        vm.loggedIn = true;
+                    }
+                
+            });
+        }
+
     })
     .controller('registerCtrl', function( $http) {
     
@@ -280,56 +290,90 @@ angular.module('app')
       
     
     })
-    .controller('itemCtrl',function($http, appData){
+    .controller('itemCtrl',function($http, appData, $state){
 
         var vm = this;
         angular.extend(vm, {
-            newItem : newItem,    
-            data    : {},
-            store   : {}
+            newItem         : newItem,
+            getStore        : getStore, 
+            insertStoreItem : insertStoreItem,
+            data            : {},
+            storeId         : 0
         }); 
         
-        /** Get store */
-        $http({
-            method: 'GET',
-            url: 'index.php/api/get_one_store/' + appData.getUserId()
-            }).then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                
-                if (angular.isObject(response.data)) {
-                    vm.store = response.data;
-                } 
-                
-            }, function errorCallback(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-        });
+        // get store
+        vm.getStore();
         
-
+        // insert new store and item
         function newItem(){
             
-            if (angular.isUndefined(vm.store.store_id)) {
+            // Skapa en ny store om dem inte redan finns
+            if (angular.isUndefined(vm.data.store_id)) {
                 
-                vm.store.person_id = appData.getUserId();
-                console.log('skicka', vm.store);
-                $http({
-                    method: 'POST',
-                    url: 'index.php/api/insert_store',
-                    data: vm.store
-                    }).then(function successCallback(response) {
-                        // this callback will be called asynchronously
-                        // when the response is available
-                        
-                        console.log('id',response.data);
-                        
-                    }, function errorCallback(response) {
-                        // called asynchronously if an error occurs
-                        // or server returns response with an error status.
-                });
+                vm.storeId = 0;
+
+            } else {
+
+                vm.storeId = vm.data.store_id;
+                
             }
+            
+            vm.insertStoreItem(vm.storeId);
+ 
+            $state.go('route1');           
+            
         }
+
         
+        /** Get store */
+        function getStore(){
+            return $http({
+                method: 'GET',
+                url: 'index.php/api/get_one_store/' + appData.getUserId()
+                }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                    
+                    if (angular.isObject(response.data)) {
+                        vm.data = response.data;
+                    } 
+                    
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+            });
+        }
+        function insertStoreItem(storeId){
+            vm.data.person_id = appData.getUserId();
+            $http({
+                method: 'POST',
+                url: 'index.php/api/insert_store_item/' + storeId,
+                data: vm.data
+                }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                    
+                    vm.data.item_id = response.data;
+                   
+                    
+                }, function errorCallback(response) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+            });
+        }
+
+    })
+    .controller('itemListCtrl',function($http, appData, $state, user, resource){
+
+        var vm = this;
+        angular.extend(vm, {
+            data         : {}
+
+        }); 
+        
+        console.log('bar', user);
+
+
     })
     .service('appData', function() {
         
@@ -363,7 +407,8 @@ angular.module('app')
     })
     .factory('resource', function resource ($http) {
         return {
-          getSignedIn       : getSignedIn
+          getSignedIn       : getSignedIn,
+          getItem           : getItem
         };
     
         function getSignedIn() {
@@ -374,9 +419,24 @@ angular.module('app')
                 }).then(function successCallback(response) {
                 // this callback will be called asynchronously
                 // when the response is available
-    
+                return response.data;
             }); 
         }
+        function getItem(user){
+            var url = 'index.php/api/items/' + user ;
+            console.log('getItem-inne', url);
+            return $http({
+                method: 'GET',
+                url: 'index.php/api/items/' + user
+                }).then(function successCallback(response) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                return response.data;
+            });
+
+        }
+
         
     });
+
 }());

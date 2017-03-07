@@ -171,4 +171,37 @@ class Api extends CI_Controller {
 
 		echo json_encode($id);
 	}
+	public function insert_item()
+	{
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+
+		$id = $this->item_model->insert_item();
+
+		echo json_encode($id);
+	}
+	public function insert_store_item($store_id)
+	{
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+
+		if ($store_id == 0) {
+
+			$store_id = $this->store_model->insert_store();
+		} 
+
+		$id = $this->item_model->insert_item($store_id);
+
+		echo json_encode($id);
+	}
+	public function items($person_id)
+	{
+ 
+		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+		
+		
+		$query = $this->store_model->get_all_item_from_store($person_id);
+		
+		echo json_encode($query);
+
+	}
+	
 }

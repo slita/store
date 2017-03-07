@@ -27,11 +27,10 @@ class Store_model extends CI_Model {
         function insert_store()
         {
 
-
                 $this->load->helper('array');
                 $raw_data = json_decode($this->input->raw_input_stream, TRUE);
                 $data = elements(array('store_name','person_id'), $raw_data);            
-                
+
                 $this->db->set($data);
                 $this->db->insert('store');
                 return  $this->db->insert_id();
@@ -58,6 +57,17 @@ class Store_model extends CI_Model {
         {
                 $this->db->where('store_id', $id);
                 $this->db->delete('store');  
+        }
+        function get_all_item_from_store ($person_id)
+        {
+                
+                
+                $this->db->select('*');
+                $this->db->where('person_id', $person_id);
+                $this->db->from('store');
+                $this->db->join('item', 'item.store_id = store.store_id');
+                $query = $this->db->get();
+                return $query->result();
         }
         
 }

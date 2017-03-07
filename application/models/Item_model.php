@@ -20,15 +20,16 @@ class Item_model extends CI_Model {
                         return $row;
                 }
                 
-
         }
-        function insert_item()
+        function insert_item($store_id)
         {
-
 
                 $this->load->helper('array');
                 $raw_data = json_decode($this->input->raw_input_stream, TRUE);
-                $data = elements(array('item_name'), $raw_data);            
+                $data = elements(array('store_id','item_name','item_id','item_desc'), $raw_data);  
+                
+                $data['store_id'] = $store_id;
+                
                 
                 $this->db->set($data);
                 $this->db->insert('item');
@@ -57,5 +58,6 @@ class Item_model extends CI_Model {
                 $this->db->where('item_id', $id);
                 $this->db->delete('item');  
         }
+        
         
 }

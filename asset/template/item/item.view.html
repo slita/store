@@ -3,17 +3,17 @@
     <form name="form" ng-submit="vm.newItem()" role="form">
         <div class="form-group" ng-class="{ 'has-error': form.storeName.$dirty && form.storeName.$error.required }">
             <label for="storeName">Store name</label>
-            <input type="text" name="storeName" id="storeName" class="form-control" ng-model="vm.store.store_name" required />
+            <input type="text" name="storeName" id="storeName" class="form-control" ng-disabled="vm.data.store_id" ng-model="vm.data.store_name" required />
             <span ng-show="form.storeName.$dirty && form.storeName.$error.required" class="help-block">Store name is required</span>
         </div>
         <div class="form-group" ng-class="{ 'has-error': form.itemName.$dirty && form.itemName.$error.required }">
             <label for="itemName">Item name</label>
-            <input type="text" name="itemName" id="Text1" class="form-control" ng-model="vm.item.item_name" required />
+            <input type="text" name="itemName" id="Text1" class="form-control" ng-model="vm.data.item_name" required />
             <span ng-show="form.itemName.$dirty && form.itemName.$error.required" class="help-block">Item name is required</span>
         </div>
         <div class="form-group" ng-class="{ 'has-error': form.itemDesc.$dirty && form.itemDesc.$error.required }">
             <label for="itemDesc">Item description</label>
-            <input type="text" name="itemDesc" id="itemDesc" class="form-control" ng-model="vm.item.item_desc" required />
+            <input type="text" name="itemDesc" id="itemDesc" class="form-control" ng-model="vm.data.item_desc" required />
             <span ng-show="form.itemDesc.$dirty && form.itemDesc.$error.required" class="help-block">Username is required</span>
         </div>
 

@@ -2,7 +2,7 @@
 (function() {
 angular.module('app')
     .config(function($stateProvider, $urlRouterProvider){
-      
+       console.log('router:');
       // For any unmatched url, send to /route1
       $urlRouterProvider.otherwise('/route1');
       
@@ -52,24 +52,26 @@ angular.module('app')
         })
         .state('route1', {
             url: '/route1',
-            templateUrl: 'asset/js/route1.html',
+            templateUrl: 'asset/template/item/list.view.html',
+            controller: 'itemListCtrl',
+            controllerAs: 'vm',
             resolve: {
               user: function(resource, $stateParams) {
                 return resource.getSignedIn();
               }
             }
         })
-          .state('route1.list', {
-              url: '/list',
-              templateUrl: 'asset/js/route1.list.html',
-              controller: function($scope){
-                $scope.items = ["A", "List", "Of", "Items"];
-              }
-          })
-          
         .state('route2', {
             url: "/route2",
-            templateUrl: "asset/js/route2.html"
+            templateUrl: "asset/js/route2.html",
+            resolve: {
+              user: function(resource, $stateParams) {
+                return resource.getSignedIn();
+              }
+            },
+            controller: function($scope){
+                console.log('roter-inne-2');
+            }
         })
           .state('route2.list', {
               url: '/list',

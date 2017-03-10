@@ -1,6 +1,7 @@
 <div class="col-md-6 col-md-offset-3">
-    <h2>New item</h2>
-    <form name="form" ng-submit="vm.newItem()" role="form">
+    <h2>New item...</h2>
+    {{vm.signedIn}}
+    <form name="form" ng-submit="vm.newItem()" role="form" ng-show="vm.signedIn">
         <div class="form-group" ng-class="{ 'has-error': form.storeName.$dirty && form.storeName.$error.required }">
             <label for="storeName">Store name</label>
             <input type="text" name="storeName" id="storeName" class="form-control" ng-disabled="vm.data.store_id" ng-model="vm.data.store_name" required />

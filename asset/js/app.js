@@ -2,27 +2,23 @@
 'use strict';
 
 (function() {  
-angular.module('app', ["ui.router"]);
-}());
+angular.module('app', ['ui.router'])
 
-
-(function() {
-angular.module('app')
-    .controller('mainCtrl', function($http, appData, $scope) {
+    .controller('mainCtrl', function($scope, appData, currentUser, dataServices) {
         
         /**
          *  Kotrollera om user är inloggad (cookieinfomation)
          *  och om inloggad läser in data.user
          * 
          */
+         
+        console.log('mainCtrl');         
         var vm = this;
         angular.extend(vm, {
-          getUserData : getUserData,
           data      : {},
           fullName  : '',
           loggedIn  : false,
           mess      : 'foo'
-          
         });  
     
         $scope.$on('loggedIn', function(event, data) { 
@@ -30,32 +26,21 @@ angular.module('app')
             vm.loggedIn = data;
             vm.fullName = appData.getFullName();
         });
-    
         
-        vm.getUserData();
+        dataServices.getSignedIn().then(getUserSuccess, getUserError);
         
-
+        function getUserSuccess(data) {
+            vm.loggedIn = data.signed_in;
+            appData.setUser(data);
+            vm.fullName = appData.getFullName();
+            currentUser.userId = data.person_id;
+            console.log('mainCtrl-getUser');
+        }   
+        function getUserError(error) {
+            console.log('error:', error );
+        } 
         
-        function getUserData (){
-            $http({
-                method: 'GET',
-                url: 'index.php/api/signed_in/user'
-            }).then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                
-                console.log('getUserData:', response.data);
-                    
-                    appData.setUser(response.data);
-                    vm.fullName = appData.getFullName();
-                    if (appData.getUserId() == undefined) {
-                         vm.loggedIn = false;
-                    } else {
-                        vm.loggedIn = true;
-                    }
-                
-            });
-        }
+        
 
     })
     .controller('registerCtrl', function( $http) {
@@ -83,21 +68,23 @@ angular.module('app')
         }
     
     })
-    .controller('loginCtrl', function($http, $stateParams, $state, $scope, appData){
+    .controller('loginCtrl', function($http, $stateParams, $state, $scope, appData, dataServices){
     
         var vm          = this;
         vm.login        = login;
-    
         vm.data         = {};
         vm.user         = {};
         vm.loggedIn     = false;
         vm.text         = '';
     
+        
+
+        
         function login() {
+            
+            dataServices.httpCacheRemoveUser();
+
             vm.text = '';
-            
-            
-    
              $http({
                 method: 'POST',
                 url: 'index.php/api/login',
@@ -111,24 +98,27 @@ angular.module('app')
                     appData.setUser(vm.data);
                     $scope.$emit('loggedIn', true);
                     $state.go('route1');
+                    
                 }, function errorCallback(response) {
                     // called asynchronously if an error occurs
                     // or server returns response with an error status.
-                       vm.text = 'Wrong username or password';
-                    var test = 0;
+                   vm.text = 'Wrong username or password';
+                    
     
             });       
     
         }
     
     })
-    .controller('accountCtrl', function( $http, $stateParams, $state, appData, $scope) {
+    .controller('accountCtrl', function( $http, $stateParams, $state, appData, $scope, dataServices) {
     
         var vm          = this;
         vm.fullName     = appData.getFullName();
         vm.logout       = logout;
         vm.user         = appData.getUser();
-        
+
+
+
         function logout(){
             
             /**
@@ -137,6 +127,9 @@ angular.module('app')
              * 
              * 
              */
+
+             dataServices.httpCacheRemoveUser();
+
             
              $http({
                 method: 'GET',
@@ -290,7 +283,7 @@ angular.module('app')
       
     
     })
-    .controller('itemCtrl',function($http, appData, $state){
+    .controller('itemCtrl',function($http, dataServices, appData, $state, $scope, user){
 
         var vm = this;
         angular.extend(vm, {
@@ -298,11 +291,25 @@ angular.module('app')
             getStore        : getStore, 
             insertStoreItem : insertStoreItem,
             data            : {},
-            storeId         : 0
+            storeId         : 0,
+            signedIn        : false
         }); 
         
-        // get store
-        vm.getStore();
+        //$scope.$emit('signedIn', user);
+        if (angular.isObject(appData.getUser())) {
+        
+            
+            vm.signedIn = true;
+            
+            // get store
+            vm.getStore();     
+            
+        } else {
+            vm.signedIn = false;
+
+        }
+        
+
         
         // insert new store and item
         function newItem(){
@@ -363,16 +370,36 @@ angular.module('app')
         }
 
     })
-    .controller('itemListCtrl',function($http, appData, $state, user, resource){
-
+    .controller('itemListCtrl',function(appData, user, $scope, dataServices, $cacheFactory, currentUser){
         var vm = this;
         angular.extend(vm, {
-            data         : {}
-
+            items       : {}
         }); 
         
-        console.log('bar', user);
+        
+        
+        var foo = $cacheFactory.get('foo')
+        if (!foo) {
+            console.log('not defined', foo);
+            foo = $cacheFactory('foo');
+        } else {
+            
+        }
+        
+        $scope.$emit('signedIn', user);
+        
+        if (angular.isObject(user)) {
+ 
+            dataServices.getItem(user.person_id)
+                .then(getUserSuccess, getUserError);
+        }
 
+        function getUserSuccess(items) {
+            vm.items = items;
+        }   
+        function getUserError(error) {
+            console.log('error:', error );
+        }   
 
     })
     .service('appData', function() {
@@ -404,39 +431,7 @@ angular.module('app')
             return this.data.user;
         }
         
-    })
-    .factory('resource', function resource ($http) {
-        return {
-          getSignedIn       : getSignedIn,
-          getItem           : getItem
-        };
-    
-        function getSignedIn() {
-    
-            return $http({
-                method: 'GET',
-                url: 'index.php/api/signed_in/user'
-                }).then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                return response.data;
-            }); 
-        }
-        function getItem(user){
-            var url = 'index.php/api/items/' + user ;
-            console.log('getItem-inne', url);
-            return $http({
-                method: 'GET',
-                url: 'index.php/api/items/' + user
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                return response.data;
-            });
-
-        }
-
-        
     });
+
 
 }());

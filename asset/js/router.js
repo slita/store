@@ -36,7 +36,6 @@ angular.module('app')
           templateUrl: 'asset/template/register/user.view.html',
           controller: 'userCtrl',
           controllerAs: 'vm'
-
         })
         .state('register', {
           url: '/register',
@@ -48,7 +47,12 @@ angular.module('app')
           url: '/item',
           templateUrl: 'asset/template/item/item.view.html',
           controller: 'itemCtrl',
-          controllerAs: 'vm'
+          controllerAs: 'vm',
+            resolve: {
+              user: function(dataServices) {
+                return dataServices.getSignedIn();
+              }
+            }
         })
         .state('route1', {
             url: '/route1',
@@ -56,8 +60,8 @@ angular.module('app')
             controller: 'itemListCtrl',
             controllerAs: 'vm',
             resolve: {
-              user: function(resource, $stateParams) {
-                return resource.getSignedIn();
+              user: function(dataServices) {
+                return dataServices.getSignedIn();
               }
             }
         })
@@ -65,12 +69,16 @@ angular.module('app')
             url: "/route2",
             templateUrl: "asset/js/route2.html",
             resolve: {
-              user: function(resource, $stateParams) {
-                return resource.getSignedIn();
+              user: function(dataServices) {
+                return dataServices.getSignedIn();
               }
             },
-            controller: function($scope){
-                console.log('roter-inne-2');
+            controller: function($scope, currentUser){
+             
+                var vm = this;
+                vm.userId = currentUser.userId;
+                console.log('roter-inne-2', vm.userId);
+               
             }
         })
           .state('route2.list', {

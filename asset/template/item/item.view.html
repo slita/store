@@ -1,28 +1,31 @@
 <div class="col-md-6 col-md-offset-3">
-    <h2>New item...</h2>
-    {{vm.signedIn}}
-    <form name="form" ng-submit="vm.newItem()" role="form" ng-show="vm.signedIn">
-        <div class="form-group" ng-class="{ 'has-error': form.storeName.$dirty && form.storeName.$error.required }">
-            <label for="storeName">Store name</label>
-            <input type="text" name="storeName" id="storeName" class="form-control" ng-disabled="vm.data.store_id" ng-model="vm.data.store_name" required />
-            <span ng-show="form.storeName.$dirty && form.storeName.$error.required" class="help-block">Store name is required</span>
-        </div>
-        <div class="form-group" ng-class="{ 'has-error': form.itemName.$dirty && form.itemName.$error.required }">
-            <label for="itemName">Item name</label>
-            <input type="text" name="itemName" id="Text1" class="form-control" ng-model="vm.data.item_name" required />
-            <span ng-show="form.itemName.$dirty && form.itemName.$error.required" class="help-block">Item name is required</span>
-        </div>
-        <div class="form-group" ng-class="{ 'has-error': form.itemDesc.$dirty && form.itemDesc.$error.required }">
-            <label for="itemDesc">Item description</label>
-            <input type="text" name="itemDesc" id="itemDesc" class="form-control" ng-model="vm.data.item_desc" required />
-            <span ng-show="form.itemDesc.$dirty && form.itemDesc.$error.required" class="help-block">Username is required</span>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">Save</button>
-            <img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-            <a href="#!/login" class="btn btn-link">Cancel</a>
-        </div>
-    </form>
+    {{vm.signedIn}}    
+        
+    <div ng-show='vm.signedIn'>    
+        <h3>{{vm.store.store_name}}</h3>
+        <form name="form" ng-submit="vm.insertItem()" role="form" ng-show="vm.signedIn">
+            <div class="form-group" ng-class="{ 'has-error': form.itemName.$dirty && form.itemName.$error.required }">
+                <label for="itemName">Item name</label>
+                <input type="text" name="itemName" id="Text1" class="form-control" ng-model="vm.item.item_name" required />
+                <span ng-show="form.itemName.$dirty && form.itemName.$error.required" class="help-block">Item name is required</span>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error': form.itemDesc.$dirty && form.itemDesc.$error.required }">
+                <label for="itemDesc">Item description</label>
+                <input type="text" name="itemDesc" id="itemDesc" class="form-control" ng-model="vm.item.item_desc" required />
+                <span ng-show="form.itemDesc.$dirty && form.itemDesc.$error.required" class="help-block">Username is required</span>
+            </div>
     
+            <div class="form-actions">
+                <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">Save</button>
+                <img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                <a href="#!/login" class="btn btn-link">Cancel</a>
+            </div>
+            <div ng-show='vm.message'>
+                {{vm.message}}
+            </div>
+        </form>
+    </div>
+    <div ng-show='!vm.signedIn'>
+        Not signed in!
+    </div>
 </div>

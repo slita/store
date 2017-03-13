@@ -101,9 +101,10 @@ class Api extends CI_Controller {
 	}
 	public function insert_person()
 	{
-		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+		
 
 		$id = $this->persons_model->insert_person();
+		echo json_encode($id);
 
 	}
 	public function delete_person($id)
@@ -165,17 +166,17 @@ class Api extends CI_Controller {
 	
 	public function insert_store()
 	{
-		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
+		//if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
 		$id = $this->store_model->insert_store();
 
 		echo json_encode($id);
 	}
-	public function insert_item()
+	public function insert_item($store_id)
 	{
 		if ( ! $this->persons_model->signed_in()){die('HTTP Error 401 Unauthorized');}
 
-		$id = $this->item_model->insert_item();
+		$id = $this->item_model->insert_item($store_id);
 
 		echo json_encode($id);
 	}

@@ -21,7 +21,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
     <script src="asset/js/app.js"></script>
     <script src="asset/js/router.js"></script>
-    <script src="asset/js/login/login.controller.js"></script>
     <script src="asset/js/services/dataServices.js"></script>
     <script src="asset/js/services/constantService.js"></script>
     <script src="asset/js/services/currentUser.js"></script>

@@ -6,10 +6,14 @@ angular.module('app')
     function currentUser() {
         
         return {
-            userId: userId 
+            userId   : userId,
+            storeId  : storeId,
+            signedIn : signedIn
         };
         
         var userId = {};
+        var storeId = {};
+        var signedIn = {};
     }
     
     

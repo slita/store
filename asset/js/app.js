@@ -4,7 +4,7 @@
 (function() {  
 angular.module('app', ['ui.router'])
 
-    .controller('mainCtrl', function($scope, appData, currentUser, dataServices) {
+    .controller('mainCtrl', function($scope, $state, currentUser, dataServices) {
         
         /**
          *  Kotrollera om user är inloggad (cookieinfomation)
@@ -20,104 +20,155 @@ angular.module('app', ['ui.router'])
           loggedIn  : false,
           mess      : 'foo'
         });  
+
     
-        $scope.$on('loggedIn', function(event, data) { 
+        
+        function updateUser (){
+            // When change user data!
+            // Remove cach 'http'
+            // Reload user info
+            console.log('updateUser');
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
+
             
-            vm.loggedIn = data;
-            vm.fullName = appData.getFullName();
-        });
-        
-        dataServices.getSignedIn().then(getUserSuccess, getUserError);
-        
+        }
+        function signOut (){
+            // Remove cach 'http'
+            // Remove other caches
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.signOut(currentUser.userId);
+            currentUser.signedIn = false;
+            vm.loggedIn          = false;
+            $state.go('route1');
+            
+        }       
+        function signIn (data){
+            // Remove cach
+            // Change user or sign in
+            
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
+            $state.go('route1');       
+            
+        }  
         function getUserSuccess(data) {
-            vm.loggedIn = data.signed_in;
-            appData.setUser(data);
-            vm.fullName = appData.getFullName();
-            currentUser.userId = data.person_id;
-            console.log('mainCtrl-getUser');
+            vm.loggedIn             = data.signed_in;
+     //       appData.setUser(data);
+            vm.fullName             = data.first_name + data.last_name;
+            currentUser.signedIn    = true;
+            currentUser.userId      = data.person_id;
+            
+            console.log('mainCtrl-getUser',vm.fullname);
         }   
         function getUserError(error) {
+            currentUser.signedIn    = false;
             console.log('error:', error );
         } 
         
+
         
+        
+        console.log('mainCtrl2');  
+       
+        /**
+         * Main controller
+         * 
+         */
+         
+         
+        // Sign in the first time
+        dataServices.httpCacheRemoveUser();
+        dataServices.getSignedIn().then(getUserSuccess, getUserError);
+        
+        // Event handler
+        
+        $scope.$on('updateUser', updateUser);
+        $scope.$on('signOut', signOut);
+        $scope.$on('signIn', signIn);
+        
+                
 
     })
-    .controller('registerCtrl', function( $http) {
+    
+    .controller('registerCtrl', function($scope, dataServices, currentUser) {
     
         var vm      = this;
         vm.register = register;
         vm.user     = {};
         
-        //vm.register();
-    
+        // Default name for new store
+        var store       = {
+            'store_name': 'My Store',
+            'person_id': 12
+        };
+        
+
         function register() {
             
-            $http({
-                method: 'POST',
-                url: 'index.php/api/insert_person',
-                data: vm.user
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
+            // Insert new User
+            dataServices.insertNewUser(vm.user).then(insertNewUserSuccess,insertNewUserError); 
             
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
         }
-    
-    })
-    .controller('loginCtrl', function($http, $stateParams, $state, $scope, appData, dataServices){
+        function insertNewUserSuccess(data){
+            console.log('newUserSuccess', data);
+            currentUser.userId = data;
+            store.person_id = data;
+            
+            // Insert new store
+            dataServices.insertStore(store).then(insertStoreSuccess);
+            
+        }
+        function insertStoreSuccess(data){
+            console.log('insertStoreSuccess', data);
+            currentUser.storeId = data;
+            
+            // Sign in
+            dataServices.signIn(vm.user).then(signInSuccess, signInError);
+ 
+        }         
+        function insertNewUserError(error){
+            console.log('newUserError', error);
+            
+        }  
+        
+        function signInSuccess(user) {
+            currentUser.userId = user.person_id;
+            $scope.$emit('signIn');
+            
+        }   
+        function signInError(error) {
+            console.log('error:', error );
+        
+        }  
+        
+    }) 
+    .controller('loginCtrl', function($state, $scope, dataServices, currentUser){
     
         var vm          = this;
         vm.login        = login;
-        vm.data         = {};
-        vm.user         = {};
-        vm.loggedIn     = false;
         vm.text         = '';
     
-        
-
-        
         function login() {
+       
+            dataServices.signIn(vm.user).then(signInSuccess, signInError);
             
-            dataServices.httpCacheRemoveUser();
-
-            vm.text = '';
-             $http({
-                method: 'POST',
-                url: 'index.php/api/login',
-                data: vm.user
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    vm.data = response.data;
-    
-    
-                    appData.setUser(vm.data);
-                    $scope.$emit('loggedIn', true);
-                    $state.go('route1');
-                    
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                   vm.text = 'Wrong username or password';
-                    
-    
-            });       
-    
+            function signInSuccess(user) {
+                currentUser.userId = user.person_id;
+                $scope.$emit('signIn');
+                
+            }   
+            function signInError(error) {
+                console.log('error:', error );
+                vm.text = 'Wrong username or password';
+            }   
         }
     
     })
-    .controller('accountCtrl', function( $http, $stateParams, $state, appData, $scope, dataServices) {
+    .controller('accountCtrl', function($scope){
     
         var vm          = this;
-        vm.fullName     = appData.getFullName();
         vm.logout       = logout;
-        vm.user         = appData.getUser();
-
-
 
         function logout(){
             
@@ -125,60 +176,36 @@ angular.module('app', ['ui.router'])
              *  Loggaut user och ta bort cookie, 
              *  gå sedan till root.
              * 
-             * 
              */
 
-             dataServices.httpCacheRemoveUser();
-
-            
-             $http({
-                method: 'GET',
-                url: 'index.php/api/logout/' + appData.getUserId()
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    
-                }); 
-                
-            /**
-             * Sen meddelande till mainCtrl
-             * gå till förstasidan
-             * 
-             */
-            $scope.$emit('loggedIn', false);
-            $state.go('route1');
+            $scope.$emit('signOut');
         }
-    
+  
     })
-    .controller('userCtrl', function($scope, $http, $stateParams, $state, appData) {
+    .controller('userCtrl', function($scope, user, $state, dataServices) {
     
         var vm      = this;
         vm.update   = update;
-        vm.fullName = appData.getFullName();
-        vm.user     = appData.getUser();
-       
+        vm.fullName = user.first_name + user.last_name;
+        vm.user     = user;
        
         function update(){
-            $http({
-                method: 'POST',
-                url: 'index.php/api/update_person/' + vm.user.person_id,
-                data: vm.user
-            }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-    
-            }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-    
-            });
+
+            dataServices.postUserData(vm.user.person_id, vm.user).then(postUserDataSuccess);
             
-            $scope.$emit('loggedIn', true);
-            $state.go('account');
+            function postUserDataSuccess(){
+                
+                $scope.$emit('updateUser');
+                $state.go('account');                
+            }
         }
     
     })
     .controller('homeCtrl', function( $http, $stateParams, $state, appData, $scope) {
+    
+        /**
+         * List all users, this is righit now only for developmant
+         */
     
         var vm          = this;
         vm.name         = appData.getFullName();
@@ -218,9 +245,11 @@ angular.module('app', ['ui.router'])
                     // or server returns response with an error status.
                 });
         }
-    })
+    }) //Development
     .controller('homeDetailCtrl', function( $http, $stateParams) {
-    
+        /** 
+         * View selected user, this is for developmant righit now.
+         */
         var vm          = this;
         vm.name         = "Perre",
         vm.data         = {},
@@ -282,102 +311,55 @@ angular.module('app', ['ui.router'])
                 });
       
     
-    })
-    .controller('itemCtrl',function($http, dataServices, appData, $state, $scope, user){
+    }) // Development
+    .controller('itemCtrl',function(dataServices, currentUser, $state, $scope){
+
 
         var vm = this;
-        angular.extend(vm, {
-            newItem         : newItem,
-            getStore        : getStore, 
-            insertStoreItem : insertStoreItem,
-            data            : {},
-            storeId         : 0,
-            signedIn        : false
-        }); 
+        vm.item     =  {},
+        vm.store    = {},
+        vm.signedIn =  currentUser.signedIn,
+        vm.insertItem  = insertItem,
+        vm.message  = null,
         
-        //$scope.$emit('signedIn', user);
-        if (angular.isObject(appData.getUser())) {
+        console.log('itemCtrl', currentUser);
         
-            
-            vm.signedIn = true;
-            
-            // get store
-            vm.getStore();     
-            
-        } else {
-            vm.signedIn = false;
-
+        // Get store
+        dataServices.getStore(currentUser.userId).then(getStoreSuccess, getStoreError);
+        
+        // Get store success
+        function getStoreSuccess(data){
+            currentUser.storeId = data.store_id; 
+            vm.store = data;
         }
         
-
+        // Get store error
+        function getStoreError(error){
+            // Shall we create a store then? Maby!
+            console.log('getStoreError', error);
+        }
         
-        // insert new store and item
-        function newItem(){
+        // Insert new item 
+        function insertItem(){
             
-            // Skapa en ny store om dem inte redan finns
-            if (angular.isUndefined(vm.data.store_id)) {
-                
-                vm.storeId = 0;
-
-            } else {
-
-                vm.storeId = vm.data.store_id;
-                
-            }
-            
-            vm.insertStoreItem(vm.storeId);
- 
-            $state.go('route1');           
+            dataServices.insertItem(currentUser.storeId, vm.item).then(insertItemSuccess);
             
         }
-
         
-        /** Get store */
-        function getStore(){
-            return $http({
-                method: 'GET',
-                url: 'index.php/api/get_one_store/' + appData.getUserId()
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    
-                    if (angular.isObject(response.data)) {
-                        vm.data = response.data;
-                    } 
-                    
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-            });
+        // Insert new item success
+        function insertItemSuccess(data){
+            console.log('insertItemSuccess',data);
+            vm.message = 'Inserted ok!';
+            //vm.item = {};
         }
-        function insertStoreItem(storeId){
-            vm.data.person_id = appData.getUserId();
-            $http({
-                method: 'POST',
-                url: 'index.php/api/insert_store_item/' + storeId,
-                data: vm.data
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    
-                    vm.data.item_id = response.data;
-                   
-                    
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-            });
-        }
-
-    })
-    .controller('itemListCtrl',function(appData, user, $scope, dataServices, $cacheFactory, currentUser){
+        
+    }) 
+    .controller('itemListCtrl',function($scope, dataServices, $cacheFactory, currentUser){
+        
         var vm = this;
-        angular.extend(vm, {
-            items       : {}
-        }); 
-        
-        
-        
+        vm.item = {};
+
+        console.log('itemListCtrl', currentUser.signedIn);
         var foo = $cacheFactory.get('foo')
         if (!foo) {
             console.log('not defined', foo);
@@ -385,19 +367,19 @@ angular.module('app', ['ui.router'])
         } else {
             
         }
-        
-        $scope.$emit('signedIn', user);
-        
-        if (angular.isObject(user)) {
- 
-            dataServices.getItem(user.person_id)
-                .then(getUserSuccess, getUserError);
+
+        if (currentUser.signedIn) {
+            dataServices.getItem(currentUser.userId)
+            .then(getItemSuccess, getItemError);  
+                
+        } else {
+            
         }
 
-        function getUserSuccess(items) {
+        function getItemSuccess(items) {
             vm.items = items;
         }   
-        function getUserError(error) {
+        function getItemError(error) {
             console.log('error:', error );
         }   
 

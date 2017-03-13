@@ -35,7 +35,12 @@ angular.module('app')
           url: '/user',
           templateUrl: 'asset/template/register/user.view.html',
           controller: 'userCtrl',
-          controllerAs: 'vm'
+          controllerAs: 'vm',
+          resolve: {
+            user: function(dataServices) {
+              return dataServices.getSignedIn();
+            }
+          }
         })
         .state('register', {
           url: '/register',
@@ -47,32 +52,17 @@ angular.module('app')
           url: '/item',
           templateUrl: 'asset/template/item/item.view.html',
           controller: 'itemCtrl',
-          controllerAs: 'vm',
-            resolve: {
-              user: function(dataServices) {
-                return dataServices.getSignedIn();
-              }
-            }
+          controllerAs: 'vm'
         })
         .state('route1', {
             url: '/route1',
             templateUrl: 'asset/template/item/list.view.html',
             controller: 'itemListCtrl',
-            controllerAs: 'vm',
-            resolve: {
-              user: function(dataServices) {
-                return dataServices.getSignedIn();
-              }
-            }
+            controllerAs: 'vm'
         })
         .state('route2', {
             url: "/route2",
             templateUrl: "asset/js/route2.html",
-            resolve: {
-              user: function(dataServices) {
-                return dataServices.getSignedIn();
-              }
-            },
             controller: function($scope, currentUser){
              
                 var vm = this;

@@ -85,7 +85,6 @@ class Persons_model extends CI_Model {
                 
                 $this->psw        = $this->password_hash(); 
                 
-                
         
                 $this->db->insert('person', $this);
                 return  $this->db->insert_id();

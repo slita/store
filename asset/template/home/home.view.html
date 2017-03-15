@@ -1,26 +1,23 @@
-<h1>Hi {{vm.name}}!</h1>
-<p>You're logged in!!</p>
 
-<div class="row">
-    <div class="col-sm-6">
-        <h3>All registered users: </h3>
-        <ul>
-            <li ng-repeat="person in vm.allPersons">
-                <a href="#" ng-click="vm.deletePerson(person.person_id)"><span class="glyphicon glyphicon-trash"></span></a>
-                <a ui-sref="home.detail ({person_id: person.person_id})" ng-click="vm.editPerson(person.person_id)"><span class="glyphicon glyphicon-edit"></span> 
-                    {{person.person_id}}{{person.first_name}} {{person.last_name}} {{person.username}}
-                </a>
-
-            </li>
-        </ul>
-        <p>&nbsp;</p>
-        <p><button ng-click="vm.logout()" class="btn btn-primary">Logout</button></p>
-
-    </div>
-    <div class="col-sm-6" style="background-color:lavenderblush;">
-
-        <ui-view></ui-view>
-
-    </div>
+<div>
+    <nav class="navbar navbar-default">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="#">Quick Start {{vm.loggedIn}}</a>
+              </div>
+              <ul class="nav navbar-nav">
+                <li><a ui-sref="home.route1">Route 1</a></li>
+                <li><a ui-sref="home.route2">Route 2</a></li>
+                <li><a ui-sref="home.item">New item</a></li>
+    
+              </ul>
+              <ul class="nav navbar-nav navbar-right">
+                <li ng-show="vm.loggedIn"><a ui-sref="home.account">{{vm.fullName}}</a></li>
+                <li ng-show="!vm.loggedIn"><a ui-sref="home.login">Login</a></li>
+              </ul>
+        </div>
+    </nav> 
 </div>
-
+<div class="col-md-6 col-md-offset-3">
+    <ui-view></ui-view>
+</div>

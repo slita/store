@@ -4,93 +4,7 @@
 (function() {  
 angular.module('app', ['ui.router'])
 
-    .controller('mainCtrl', function($scope, $state, currentUser, dataServices) {
-        
-        /**
-         *  Kotrollera om user är inloggad (cookieinfomation)
-         *  och om inloggad läser in data.user
-         * 
-         */
-         
-        console.log('mainCtrl');         
-        var vm = this;
-        angular.extend(vm, {
-          data      : {},
-          fullName  : '',
-          loggedIn  : false,
-          mess      : 'foo'
-        });  
-
-    
-        
-        function updateUser (){
-            // When change user data!
-            // Remove cach 'http'
-            // Reload user info
-            console.log('updateUser');
-            dataServices.httpCacheRemoveUser(currentUser.userId);
-            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
-
-            
-        }
-        function signOut (){
-            // Remove cach 'http'
-            // Remove other caches
-            dataServices.httpCacheRemoveUser(currentUser.userId);
-            dataServices.signOut(currentUser.userId);
-            currentUser.signedIn = false;
-            vm.loggedIn          = false;
-            $state.go('route1');
-            
-        }       
-        function signIn (data){
-            // Remove cach
-            // Change user or sign in
-            
-            dataServices.httpCacheRemoveUser(currentUser.userId);
-            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
-            $state.go('route1');       
-            
-        }  
-        function getUserSuccess(data) {
-            vm.loggedIn             = data.signed_in;
-     //       appData.setUser(data);
-            vm.fullName             = data.first_name + data.last_name;
-            currentUser.signedIn    = true;
-            currentUser.userId      = data.person_id;
-            
-            console.log('mainCtrl-getUser',vm.fullname);
-        }   
-        function getUserError(error) {
-            currentUser.signedIn    = false;
-            console.log('error:', error );
-        } 
-        
-
-        
-        
-        console.log('mainCtrl2');  
-       
-        /**
-         * Main controller
-         * 
-         */
-         
-         
-        // Sign in the first time
-        dataServices.httpCacheRemoveUser();
-        dataServices.getSignedIn().then(getUserSuccess, getUserError);
-        
-        // Event handler
-        
-        $scope.$on('updateUser', updateUser);
-        $scope.$on('signOut', signOut);
-        $scope.$on('signIn', signIn);
-        
-                
-
-    })
-    
+ 
     .controller('registerCtrl', function($scope, dataServices, currentUser) {
     
         var vm      = this;
@@ -151,11 +65,14 @@ angular.module('app', ['ui.router'])
     
         function login() {
        
+            
+            dataServices.httpCacheRemoveUser(currentUser.userId);
             dataServices.signIn(vm.user).then(signInSuccess, signInError);
             
             function signInSuccess(user) {
                 currentUser.userId = user.person_id;
                 $scope.$emit('signIn');
+                $state.go('home'); 
                 
             }   
             function signInError(error) {
@@ -196,55 +113,113 @@ angular.module('app', ['ui.router'])
             function postUserDataSuccess(){
                 
                 $scope.$emit('updateUser');
-                $state.go('account');                
+                $state.go('home.account');                
             }
         }
     
     })
-    .controller('homeCtrl', function( $http, $stateParams, $state, appData, $scope) {
-    
+    .controller('homeCtrl', function( $scope, $state, currentUser, dataServices, $q, $timeout, user) {
         /**
-         * List all users, this is righit now only for developmant
+         *  Kotrollera om user är inloggad (cookieinfomation)
+         *  och om inloggad läser in data.user
+         * 
          */
-    
-        var vm          = this;
-        vm.name         = appData.getFullName();
-        vm.deletePerson = deletePerson;
-        vm.person_id    = $stateParams.person_id;
-    
+         
+        console.log('mainCtrl');         
+
+        var vm = this;
         
-        var bar = 'bar';
-       
-    
-        $http({
-            method: 'GET',
-            url: 'index.php/api/persons'
-            }).then(function successCallback(response) {
-                // this callback will be called asynchronously
-                // when the response is available
-                vm.allPersons = response.data;
-            }, function errorCallback(response) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-            });
-            
+        vm.data      = {},
+        vm.fullName  = '',
+        vm.loggedIn  = false,
+        vm.mess      = 'foo';
+
+
+        /**
+         * Main controller
+         * 
+         */
+
+        // Sign in the first time
+        currentUser.signedIn = false;
+        dataServices.httpCacheRemoveUser();
         
-        function deletePerson($id) {
+        getUserSuccess(user);
+        
+        // dataServices.getSignedIn()
+        //     .then(getUserSuccess, getUserError);
+ 
+        // $timeout(function () {
+        //       console.log('hoppaaa');  
+
+        // });
+        
+        // $http.get(function(res){ 
+        //     console.log(res) 
+            
+        // } /* Här lägger du det du vill vänta med tills requesten är klar */ , function(res){ console.error(res) })
+
+  
+        
+        
+        // Event handler
+        $scope.$on('updateUser', updateUser);
+        $scope.$on('signOut', signOut);
+        $scope.$on('signIn', signIn);
     
-            var url = 'index.php/api/delete_person/' + $id;
+        // Update user
+        function updateUser (){
+            // When change user data!
+            // Remove cach 'http'
+            // Reload user info
+            console.log('updateUser');
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
+
             
-            $http({
-                method: 'DELETE',
-                url: url
-                }).then(function successCallback(response) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-            
-                }, function errorCallback(response) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
         }
+        
+        // Sign out
+        function signOut (){
+            // Remove cach 'http'
+            // Remove other caches
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.signOut(currentUser.userId);
+            currentUser.signedIn = false;
+            vm.loggedIn          = false;
+            $state.go('home.route1');
+            
+        } 
+        
+        // Sign in
+        function signIn (data){
+            // Remove cach
+            // Change user or sign in
+            
+            dataServices.httpCacheRemoveUser(currentUser.userId);
+            dataServices.getSignedIn().then(getUserSuccess, getUserError); 
+            $state.go('home.route1');       
+            
+        }
+        
+        // Get user success
+        function getUserSuccess(data) {
+            vm.loggedIn             = data.signed_in;
+     //       appData.setUser(data);
+            vm.fullName             = data.first_name + data.last_name;
+            currentUser.signedIn    = true;
+            currentUser.userId      = data.person_id;
+
+            console.log('mainCtrl-getUser', currentUser);
+        }  
+        
+        // Get user error
+        function getUserError(error) {
+            currentUser.signedIn    = false;
+            console.log('error:', error );
+        } 
+
+
     }) //Development
     .controller('homeDetailCtrl', function( $http, $stateParams) {
         /** 
@@ -383,6 +358,29 @@ angular.module('app', ['ui.router'])
             console.log('error:', error );
         }   
 
+    })
+    .controller('testCtrl', function($scope, user, $state, dataServices) {
+        
+        // Test deferred funktion
+        dataServices.testDefer()
+            .then(testDeferSuccess, null, testDeferNot)
+            .catch(testDeferError)
+            .finally(testDeferFinally);
+
+        function testDeferSuccess(result) {
+            console.log('testDeferSuccess', result);
+        }         
+        function testDeferError(error) {
+            console.log('testDeferError', error);
+        } 
+        function testDeferNot(notification) {
+            console.log('testDeferNot :'+ notification);
+        } 
+         function testDeferFinally() {
+            console.log('testDeferFinally');
+        }  
+
+    
     })
     .service('appData', function() {
         

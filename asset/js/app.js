@@ -329,6 +329,34 @@ angular.module('app', ['ui.router'])
         }
         
     }) 
+    .controller('storeCtrl',function(dataServices, currentUser, $state, $scope){
+
+
+        var vm = this;
+        vm.item     =  {},
+        vm.store    = {},
+        vm.signedIn =  currentUser.signedIn,
+        vm.message  = '',
+        
+        console.log('storeCtrl', currentUser);
+        
+        // Get store
+        dataServices.getStore(currentUser.userId).then(getStoreSuccess, getStoreError);
+        
+        // Get store success
+        function getStoreSuccess(data){
+            currentUser.storeId = data.store_id; 
+            vm.store = data;
+            console.log('store', vm.store);
+        }
+        
+        // Get store error
+        function getStoreError(error){
+            // Shall we create a store then? Maby!
+            console.log('getStoreError', error);
+        }
+        
+    }) 
     .controller('itemListCtrl',function($scope, dataServices, $cacheFactory, currentUser){
         
         var vm = this;

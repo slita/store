@@ -40,6 +40,17 @@ angular.module('app')
           url: '/user',
           templateUrl: 'asset/template/register/user.view.html',
           controller: 'userCtrl',
+          controllerAs: 'vm',
+          resolve: {
+            user: function(dataServices) {
+              return dataServices.getSignedIn();
+            }
+          }
+        })
+        .state('home.account.store', {
+          url: '/store',
+          templateUrl: 'asset/template/store/store.view.html',
+          controller: 'storeCtrl',
           controllerAs: 'vm'
         })
         .state('home.register', {

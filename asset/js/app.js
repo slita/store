@@ -2,7 +2,7 @@
 'use strict';
 
 (function() {  
-angular.module('app', ['ui.router'])
+angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
 
  
     .controller('registerCtrl', function($scope, dataServices, currentUser) {
@@ -82,10 +82,12 @@ angular.module('app', ['ui.router'])
         }
     
     })
-    .controller('accountCtrl', function($scope){
+    .controller('accountCtrl', function($scope, $window, $state, $uibModal, $log){
     
-        var vm          = this;
-        vm.logout       = logout;
+        var vm              = this;
+        vm.logout           = logout,
+        vm.back             = back,
+        vm.showModal        = showModal;
 
         function logout(){
             
@@ -97,8 +99,68 @@ angular.module('app', ['ui.router'])
 
             $scope.$emit('signOut');
         }
+        function back(){
+            $window.history.back();
+        }
+        
+        /**
+         * Modal - test
+         * 
+         */
+        
+        vm.items = ['item1', 'item2', 'item3'];
+        vm.animationsEnabled = true;
+
+        function showModal(){
+            
+            // size =  '' or 'lg' or 'sm'
+            var size = '';
+            var modalInstance = $uibModal.open({
+                animation: vm.animationsEnabled,
+                templateUrl: 'asset/template/register/modal.view.html',
+                controller: 'modalCtrl',
+                controllerAs: 'vm',
+                size: size,      
+                resolve: {
+                    items: function () {
+                        return vm.items;
+                    }
+                }
+  
+            });
+
+            modalInstance.result.then(function (selectedItem) {
+                vm.selected = selectedItem;
+                $log.info('Selected: ' + vm.selected);
+                
+            }, function () {
+               $log.info('Modal dismissed at: ' + new Date());
+            });
+
+        }
   
     })
+    .controller('modalCtrl',function(dataServices, currentUser, $state, $uibModalInstance, items, $scope){
+
+
+        var vm = this;
+ 
+        console.log('modalCtrl', currentUser);
+        
+        vm.items = items;
+        vm.selected = {
+            item: vm.items[0]
+        };
+        
+        $scope.ok = function () {
+            $uibModalInstance.close(vm.selected.item);
+        };
+        
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+ 
+    }) 
     .controller('userCtrl', function($scope, user, $state, dataServices) {
     
         var vm      = this;
@@ -337,6 +399,7 @@ angular.module('app', ['ui.router'])
         vm.store    = {},
         vm.signedIn =  currentUser.signedIn,
         vm.message  = '',
+        vm.signedIn =  true;
         
         console.log('storeCtrl', currentUser);
         

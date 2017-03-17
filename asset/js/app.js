@@ -180,7 +180,7 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         }
     
     })
-    .controller('homeCtrl', function( $scope, $state, currentUser, dataServices, $q, $timeout, user) {
+    .controller('homeCtrl', function( $scope, $state, currentUser, dataServices, $q, $timeout, user, $log) {
         /**
          *  Kotrollera om user är inloggad (cookieinfomation)
          *  och om inloggad läser in data.user
@@ -195,7 +195,15 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         vm.fullName  = '',
         vm.loggedIn  = false,
         vm.mess      = 'foo';
-
+  
+    $scope.items = [
+    'The first choice!',
+    'And another choice for you.',
+    'but wait! A third!'
+  ];
+  $scope.toggled = function(open) {
+    $log.log('Dropdown is now: ', open);
+  };
 
         /**
          * Main controller

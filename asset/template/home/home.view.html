@@ -9,7 +9,22 @@
                 <li><a ui-sref="home.route1">Route 1</a></li>
                 <li><a ui-sref="home.route2">Route 2</a></li>
                 <li><a ui-sref="home.item">New item</a></li>
-    
+                <li uib-dropdown on-toggle="toggled(open)">
+
+                      <a href id="simple-dropdown" uib-dropdown-toggle>
+                        Click me for a dropdown, yo!
+                      </a>
+                      <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                        <li ng-repeat="choice in items">
+                          <a href>{{choice}}</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li role="menuitem"><a href="#">Separated link</a></li>
+                      </ul>
+
+                  
+                  
+                </li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
                 <li ng-show="vm.loggedIn"><a ui-sref="home.account">{{vm.fullName}}</a></li>

@@ -66,7 +66,33 @@ class Api extends CI_Controller {
 
 		echo 'foo:', json_encode($arr);
 	}
-	
+	public function upload()
+	{
+		$this->load->helper('array');
+
+		$config['upload_path'] = './uploads/';
+		$config['allowed_types'] = 'gif|jpg|png';
+		//$config['max_size']     = '100';
+		//$config['max_width'] = '1024';
+		//$config['max_height'] = '768';
+		
+		$this->load->library('upload' , $config);
+		$this->upload->do_upload('my_file');
+		
+		echo "AAAAAAAAAAAAAAAAAAA";
+		echo $this->upload->display_errors();
+		echo "BBBBBBBBBBBBBBBBBBB";
+		$data = array('upload_data' => $this->upload->data());
+		$headers = $this->input->request_headers('mytype',true);
+		$something = $this->input->post('ALFA');
+		//$raw_data = json_decode($this->input->raw_input_stream, TRUE);
+		//$alfa = $this->input->input_stream('ALFA', TRUE); 
+        //$data = elements(array('ALFA','BETA','myType'), $raw_data); 
+		//var_dump ($headers);
+		print_r($headers);
+		echo $headers['mytype'];
+		echo "CCCCCCCCCCCCCCCCCCCCCC";
+	}	
 	/** Person */
 	
 	public function signed_in()

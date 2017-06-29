@@ -7,6 +7,12 @@ angular.module('app')
       $urlRouterProvider.otherwise('/home');
       
       $stateProvider
+        .state('alert', {
+          url: '/alert',
+          
+          controller:'alertCtrl',
+          controllerAs: 'vm'
+        })      
         .state('home', {
           url: '/home',
           templateUrl: 'asset/template/home/home.view.html',
@@ -30,13 +36,19 @@ angular.module('app')
           controller: 'loginCtrl',
           controllerAs: 'vm'
         })
+        .state('home.start', {
+          url: '/start',
+          templateUrl: 'asset/template/home/start.view.html',
+          controller: 'startCtrl',
+          controllerAs: 'vm'
+        })        
         .state('home.account', {
           url: '/account',
           templateUrl: 'asset/template/register/account.view.html',
           controller: 'accountCtrl',
           controllerAs: 'vm'
         })
-        .state('home.account.user', {
+        .state('home.user', {
           url: '/user',
           templateUrl: 'asset/template/register/user.view.html',
           controller: 'userCtrl',
@@ -63,6 +75,12 @@ angular.module('app')
           url: '/item',
           templateUrl: 'asset/template/item/item.view.html',
           controller: 'itemCtrl',
+          controllerAs: 'vm'
+        })
+        .state('home.file', {
+          url: '/file',
+          templateUrl: 'asset/template/item/file.view.html',
+          controller: 'fileCtrl',
           controllerAs: 'vm'
         })
         .state('home.route1', {

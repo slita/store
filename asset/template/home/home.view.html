@@ -3,36 +3,76 @@
     <nav class="navbar navbar-default">
           <div class="container-fluid">
               <div class="navbar-header">
-                <a class="navbar-brand" href="#">Quick Start {{vm.loggedIn}}</a>
+                
+                <a ng-hide="vm.init" class="navbar-brand" href="#">Glukus {{vm.loggedIn}}</a>
+                
+                 
               </div>
               <ul class="nav navbar-nav">
-                <li><a ui-sref="home.route1">Route 1</a></li>
-                <li><a ui-sref="home.route2">Route 2</a></li>
-                <li><a ui-sref="home.item">New item</a></li>
-                <li uib-dropdown on-toggle="toggled(open)">
+                 
 
-                      <a href id="simple-dropdown" uib-dropdown-toggle>
-                        Click me for a dropdown, yo!
-                      </a>
-                      <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
-                        <li ng-repeat="choice in items">
-                          <a href>{{choice}}</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li role="menuitem"><a href="#">Separated link</a></li>
-                      </ul>
-
+              </ul>
+              <form name="vm.mySearchForm" class="navbar-form navbar-left" xng-hide="vm.init" xng-show="!vm.init">
+                <div class="form-group">
+                    <input autofocus id="mySearch" name="mySearch"  xng-hide="vm.init"   type="text" class="form-control" 
+                      placeholder="Search"  ng-change="vm.changeSearch()" ng-model="vm.search">
+                </div>
+              </form>
+                
+                  
+              <ul class="nav navbar-nav navbar-right" ng-show="vm.loggedIn">
+               
+                
+                 <li  ><a ui-sref="home.item">New item</a></li>
                   
                   
-                </li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right">
-                <li ng-show="vm.loggedIn"><a ui-sref="home.account">{{vm.fullName}}</a></li>
-                <li ng-show="!vm.loggedIn"><a ui-sref="home.login">Login</a></li>
-              </ul>
+                  <li uib-dropdown on-toggle="toggled(open)"  ng-show="vm.loggedIn">
+  
+                        <a href id="simple-dropdown" uib-dropdown-toggle>
+                          {{vm.fullName}}
+                        </a>
+                        <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                          <li>
+                              <a ui-sref="home.user" ng-click="vm.hide = true">User data</a>
+   
+                          </li>
+                          <li>
+  
+                            <a ui-sref=".account.store" >Store</a>
+                          </li>
+                          <li>
+  
+                            <a ui-sref="home.account">Account</a>
+                          </li>
+                          <li class="divider"></li>
+                          <li role="menuitem"><a href="#">Separated link</a></li>
+                        </ul>
+                  </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right" ng-show="!vm.loggedIn">
+                  <!--<li ng-show="vm.loggedIn"><a ui-sref="home.account">{{vm.fullName}}</a></li>-->
+                  <li><a ui-sref="home.login">Login</a></li>
+                </ul>
         </div>
     </nav> 
+
 </div>
-<div >
+<!--<div class="container" ng-show="vm.init">
+    <div class="col-sm-4">
+    </div>  
+    <div class="col-sm-4">
+      <div>
+        <h3>Glukus</h3>
+        <form>
+          <div class="form-group">
+            <input id="mySearch2" name="mySearch2" type="text" class="form-control" placeholder="Search"  ng-model="vm.search" ng-change="vm.changeSearch()">
+            
+          </div>
+        </form>
+      </div>
+    </div>
+</div> --> 
+
+<div>
     <ui-view></ui-view>
 </div>

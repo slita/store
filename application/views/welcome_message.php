@@ -22,8 +22,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.3.3.js"></script>
     <script src="//angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
+    <script src="asset/js/plugins/angular-file-upload/angular-file-upload.min.js"></script>
+    
     <script src="asset/js/app.js"></script>
+    <script src="asset/js/app.tools.js"></script>
     <script src="asset/js/router.js"></script>
     <script src="asset/js/services/dataServices.js"></script>
     <script src="asset/js/services/constantService.js"></script>

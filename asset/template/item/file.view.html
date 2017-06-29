@@ -1,0 +1,26 @@
+<div class="col-md-6 col-md-offset-3">
+    {{vm.foo}}    
+    <div>
+                    <div ng-show="vm.uploader.isHTML5">
+                        <!-- 3. nv-file-over uploader="link" over-class="className" -->
+                        <div class="well my-drop-zone" nv-file-over="" uploader="vm.uploader">
+                            Base drop zone
+                        </div>
+
+                        <!-- Example: nv-file-drop="" uploader="{Object}" options="{Object}" filters="{String}" -->
+                        <div nv-file-drop="" uploader="vm.uploader" >
+                            <div nv-file-over="" uploader="vm.uploader" over-class="another-file-over-class" class="well my-drop-zone">
+                                Another drop zone with its own settings
+                            </div>
+                        </div>
+                    </div>
+                    
+        <input type="file"  nv-file-select uploader="vm.uploader" multiple  /><br/>
+        <ul>
+            <li ng-repeat="item in vm.uploader.queue">
+                Name: <span ng-bind="item.file.name"></span><br/>
+                <button ng-click="item.upload()">upload</button>
+            </li>
+        </ul>
+    </div>
+</div>

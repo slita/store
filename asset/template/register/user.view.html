@@ -14,7 +14,7 @@
         <div class="form-actions">
             <button type="submit" ng-disabled="form.$invalid || vm.dataLoading" class="btn btn-primary">Update</button>
              
-            <a ui-sref="^" class="btn btn-link">Cancel</a>
+            <a ui-sref="^" ui-sref-opts="{reload: true}" class="btn btn-link">Cancel</a>
         </div>
     </form>
 </div>

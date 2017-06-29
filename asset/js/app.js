@@ -2,7 +2,7 @@
 'use strict';
 
 (function() {  
-angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
+angular.module('app', ['ui.router','ngAnimate','ui.bootstrap','angularFileUpload'])
 
  
     .controller('registerCtrl', function($scope, dataServices, currentUser) {
@@ -82,6 +82,23 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         }
     
     })
+    .controller('startCtrl', function($state, $scope, dataServices, currentUser){
+    
+        var vm          = this;
+        vm.search       = null,
+        vm.change       = change;
+        $scope.isFocused = true;
+        
+        console.log('startCtrl'); 
+    
+        function change() {
+            console.log('send', vm.search);
+            $scope.$emit('search',vm.search);
+            $state.go('home');
+        }
+  
+    
+    })   
     .controller('accountCtrl', function($scope, $window, $state, $uibModal, $log){
     
         var vm              = this;
@@ -175,35 +192,73 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
             function postUserDataSuccess(){
                 
                 $scope.$emit('updateUser');
-                $state.go('home.account');                
+                $state.go('home');                
             }
         }
     
     })
-    .controller('homeCtrl', function( $scope, $state, currentUser, dataServices, $q, $timeout, user, $log) {
+    .controller('homeCtrl', function( $scope, $state, currentUser, dataServices, $q, $timeout, user, $log, $document) {
         /**
          *  Kotrollera om user är inloggad (cookieinfomation)
          *  och om inloggad läser in data.user
          * 
          */
          
-        console.log('mainCtrl');         
+        console.log('homeCtrl');         
 
         var vm = this;
         
-        vm.data      = {},
-        vm.fullName  = '',
-        vm.loggedIn  = false,
-        vm.mess      = 'foo';
-  
-    $scope.items = [
-    'The first choice!',
-    'And another choice for you.',
-    'but wait! A third!'
-  ];
-  $scope.toggled = function(open) {
-    $log.log('Dropdown is now: ', open);
-  };
+        vm.data         = {},
+        vm.fullName     = '',
+        vm.loggedIn     = false,
+        vm.search       = '',
+        vm.mySearchEvent = mySearchEvent,  
+        vm.init         = true,
+        vm.mess         = 'foo',
+        vm.changeSearch = changeSearch;
+        vm.setFocus     = setFocus;
+        vm.i            = i;
+
+
+        //vm.setFocus("mySearch2");
+        
+        function setFocus(id){
+            // var textbox = $document.getElementById(id);
+            // textbox.focus();
+            // textbox.scrollIntoView();
+        }
+        
+
+        // Changed search field
+        function changeSearch(){
+            vm.init = false;
+            //vm.setFocus("mySearch");
+            //$scope.$broadcast("mySearch");
+            //var textbox = $document.find("mySearch").attr("autofocus");
+            //console.log('textbox', textbox );
+            $timeout( function(){
+                //$document.find("mySearch").attr("autofocus");
+                //var x = $document.find('#mySearch');
+                //x.attr("autofocus");
+             document.getElementById("mySearch").focus();
+             
+            }, 1 );
+
+        }
+        
+        function i(argument) {
+            vm.init = false;
+        }
+
+
+        $scope.items = [
+        'The first choice!',
+        'And another choice for you.',
+        'but wait! A third!'
+         ];
+        $scope.toggled = function(open) {
+            $log.log('Dropdown is now: ', open);
+        };
 
         /**
          * Main controller
@@ -236,9 +291,27 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         $scope.$on('updateUser', updateUser);
         $scope.$on('signOut', signOut);
         $scope.$on('signIn', signIn);
-    
+        $scope.$on('search', mySearchEvent);
+        
+        // My event
+        function mySearchEvent(event, data){
+            switch(event.name) {
+                
+                // Search from start    
+                case 'search':
+                
+                    console.log('search:', event);
+                    vm.search = data;
+
+                    
+                break;
+            default:
+                alert('No event: ' + event.name);
+            }
+        }
+
         // Update user
-        function updateUser (){
+        function updateUser (event, data){
             // When change user data!
             // Remove cach 'http'
             // Reload user info
@@ -250,7 +323,7 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         }
         
         // Sign out
-        function signOut (){
+        function signOut (event, data){
             // Remove cach 'http'
             // Remove other caches
             dataServices.httpCacheRemoveUser(currentUser.userId);
@@ -262,7 +335,7 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         } 
         
         // Sign in
-        function signIn (data){
+        function signIn (event, data){
             // Remove cach
             // Change user or sign in
             
@@ -272,6 +345,7 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
             
         }
         
+
         // Get user success
         function getUserSuccess(data) {
             vm.loggedIn             = data.signed_in;
@@ -287,7 +361,8 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
         function getUserError(error) {
             currentUser.signedIn    = false;
             console.log('error:', error );
-        } 
+        }
+
 
 
     }) //Development
@@ -397,6 +472,82 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
             vm.message = 'Inserted ok!';
             //vm.item = {};
         }
+        
+    }) 
+    .controller('fileCtrl',function(dataServices, currentUser, $state, $scope, FileUploader){
+
+
+        var vm = this;
+        vm.file     =  {},
+        vm.foo      = 'bar',
+        vm.uploader = {};
+
+        vm.uploader = new FileUploader({
+            url: 'index.php/api/upload',
+            alias: 'my_file',
+            removeAfterUpload : true,
+            headers : {myType: 'DINGALINGALENA'},
+            formData: [{'ALFA':'PER'},{'BETA':'GUSTAFSON'}]
+        });
+
+        // FILTERS
+      
+        // a sync filter
+        // vm.uploader.filters.push({
+        //     name: 'syncFilter',
+        //     fn: function(item /*{File|FileLikeObject}*/, options) {
+        //         console.log('syncFilter');
+        //         return this.queue.length < 10;
+        //     }
+        // });
+      
+        // an async filter
+        vm.uploader.filters.push({
+            name: 'asyncFilter',
+            fn: function(item /*{File|FileLikeObject}*/, options, deferred) {
+                console.log('asyncFilter');
+                setTimeout(deferred.resolve, 1e3);
+            }
+        });
+
+        // CALLBACKS
+
+        vm.uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+            console.info('onWhenAddingFileFailed', item, filter, options);
+        };
+        vm.uploader.onAfterAddingFile = function(fileItem) {
+            console.info('onAfterAddingFile', fileItem);
+        };
+        vm.uploader.onAfterAddingAll = function(addedFileItems) {
+            console.info('onAfterAddingAll', addedFileItems);
+        };
+        vm.uploader.onBeforeUploadItem = function(item) {
+            console.info('onBeforeUploadItem', item);
+        };
+        vm.uploader.onProgressItem = function(fileItem, progress) {
+            console.info('onProgressItem', fileItem, progress);
+        };
+        vm.uploader.onProgressAll = function(progress) {
+            console.info('onProgressAll', progress);
+        };
+        vm.uploader.onSuccessItem = function(fileItem, response, status, headers) {
+            console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+        vm.uploader.onErrorItem = function(fileItem, response, status, headers) {
+            console.info('onErrorItem', fileItem, response, status, headers);
+        };
+        vm.uploader.onCancelItem = function(fileItem, response, status, headers) {
+            console.info('onCancelItem', fileItem, response, status, headers);
+        };
+        vm.uploader.onCompleteItem = function(fileItem, response, status, headers) {
+            console.info('onCompleteItem', fileItem, response, status, headers);
+        };
+        vm.uploader.onCompleteAll = function() {
+            console.info('onCompleteAll');
+        };
+
+        console.info('uploader', vm.uploader);        
+
         
     }) 
     .controller('storeCtrl',function(dataServices, currentUser, $state, $scope){
@@ -510,7 +661,16 @@ angular.module('app', ['ui.router','ngAnimate','ui.bootstrap'])
             return this.data.user;
         }
         
-    });
+    })
+    .directive('focusOn', function($timeout) {
+       return function(scope, element, attr) {
+          scope.$on(attr.focusOn, function(e) {
+              $timeout(function() {
+                element[0].focus(); 
+              });
+          });
+       };
+});
 
 
 }());
